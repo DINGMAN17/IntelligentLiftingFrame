@@ -11,7 +11,10 @@ import SwiftUI
 struct IntelligentLiftingFrameApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            let controlModel = ControlViewModel()
+            ControlView(controlModel: controlModel)
         }
     }
 }
+
+

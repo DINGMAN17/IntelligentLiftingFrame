@@ -8,12 +8,18 @@
 
 /* Begin PBXBuildFile section */
 		A208449C292CA1BC0072E981 /* IntelligentLiftingFrameApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A208449B292CA1BC0072E981 /* IntelligentLiftingFrameApp.swift */; };
-		A208449E292CA1BC0072E981 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A208449D292CA1BC0072E981 /* ContentView.swift */; };
+		A208449E292CA1BC0072E981 /* ControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A208449D292CA1BC0072E981 /* ControlView.swift */; };
 		A20844A0292CA1BD0072E981 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A208449F292CA1BD0072E981 /* Assets.xcassets */; };
 		A20844A3292CA1BD0072E981 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A20844A2292CA1BD0072E981 /* Preview Assets.xcassets */; };
 		A20844AD292CA1BD0072E981 /* IntelligentLiftingFrameTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20844AC292CA1BD0072E981 /* IntelligentLiftingFrameTests.swift */; };
 		A20844B7292CA1BD0072E981 /* IntelligentLiftingFrameUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20844B6292CA1BD0072E981 /* IntelligentLiftingFrameUITests.swift */; };
 		A20844B9292CA1BD0072E981 /* IntelligentLiftingFrameUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20844B8292CA1BD0072E981 /* IntelligentLiftingFrameUITestsLaunchTests.swift */; };
+		A209D33929358DE700C68ED6 /* ControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A209D33829358DE700C68ED6 /* ControlViewModel.swift */; };
+		A211BC8D293492E4005F1FFE /* ClientConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A211BC8C293492E4005F1FFE /* ClientConnection.swift */; };
+		A211BC8F293493E8005F1FFE /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = A211BC8E293493E8005F1FFE /* Client.swift */; };
+		A211BC912934B053005F1FFE /* systemModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A211BC902934B053005F1FFE /* systemModel.swift */; };
+		A211BC932934B599005F1FFE /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = A211BC922934B599005F1FFE /* Command.swift */; };
+		A24396AF294095C100041164 /* GamepadController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A24396AE294095C100041164 /* GamepadController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,7 +42,7 @@
 /* Begin PBXFileReference section */
 		A2084498292CA1BC0072E981 /* IntelligentLiftingFrame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IntelligentLiftingFrame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A208449B292CA1BC0072E981 /* IntelligentLiftingFrameApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntelligentLiftingFrameApp.swift; sourceTree = "<group>"; };
-		A208449D292CA1BC0072E981 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A208449D292CA1BC0072E981 /* ControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlView.swift; sourceTree = "<group>"; };
 		A208449F292CA1BD0072E981 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A20844A2292CA1BD0072E981 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		A20844A8292CA1BD0072E981 /* IntelligentLiftingFrameTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = IntelligentLiftingFrameTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -44,6 +50,12 @@
 		A20844B2292CA1BD0072E981 /* IntelligentLiftingFrameUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = IntelligentLiftingFrameUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A20844B6292CA1BD0072E981 /* IntelligentLiftingFrameUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntelligentLiftingFrameUITests.swift; sourceTree = "<group>"; };
 		A20844B8292CA1BD0072E981 /* IntelligentLiftingFrameUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntelligentLiftingFrameUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		A209D33829358DE700C68ED6 /* ControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlViewModel.swift; sourceTree = "<group>"; };
+		A211BC8C293492E4005F1FFE /* ClientConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConnection.swift; sourceTree = "<group>"; };
+		A211BC8E293493E8005F1FFE /* Client.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Client.swift; sourceTree = "<group>"; };
+		A211BC902934B053005F1FFE /* systemModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = systemModel.swift; sourceTree = "<group>"; };
+		A211BC922934B599005F1FFE /* Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
+		A24396AE294095C100041164 /* GamepadController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamepadController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,10 +106,14 @@
 		A208449A292CA1BC0072E981 /* IntelligentLiftingFrame */ = {
 			isa = PBXGroup;
 			children = (
+				A24396AD2940959F00041164 /* Gamepad */,
+				A209D33B2935AE3400C68ED6 /* InfoProcess */,
+				A209D33A2935AE1B00C68ED6 /* Network */,
 				A208449B292CA1BC0072E981 /* IntelligentLiftingFrameApp.swift */,
-				A208449D292CA1BC0072E981 /* ContentView.swift */,
+				A208449D292CA1BC0072E981 /* ControlView.swift */,
 				A208449F292CA1BD0072E981 /* Assets.xcassets */,
 				A20844A1292CA1BD0072E981 /* Preview Content */,
+				A209D33829358DE700C68ED6 /* ControlViewModel.swift */,
 			);
 			path = IntelligentLiftingFrame;
 			sourceTree = "<group>";
@@ -125,6 +141,32 @@
 				A20844B8292CA1BD0072E981 /* IntelligentLiftingFrameUITestsLaunchTests.swift */,
 			);
 			path = IntelligentLiftingFrameUITests;
+			sourceTree = "<group>";
+		};
+		A209D33A2935AE1B00C68ED6 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				A211BC8E293493E8005F1FFE /* Client.swift */,
+				A211BC8C293492E4005F1FFE /* ClientConnection.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		A209D33B2935AE3400C68ED6 /* InfoProcess */ = {
+			isa = PBXGroup;
+			children = (
+				A211BC902934B053005F1FFE /* systemModel.swift */,
+				A211BC922934B599005F1FFE /* Command.swift */,
+			);
+			path = InfoProcess;
+			sourceTree = "<group>";
+		};
+		A24396AD2940959F00041164 /* Gamepad */ = {
+			isa = PBXGroup;
+			children = (
+				A24396AE294095C100041164 /* GamepadController.swift */,
+			);
+			path = Gamepad;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -257,8 +299,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A208449E292CA1BC0072E981 /* ContentView.swift in Sources */,
+				A211BC8D293492E4005F1FFE /* ClientConnection.swift in Sources */,
+				A208449E292CA1BC0072E981 /* ControlView.swift in Sources */,
+				A211BC912934B053005F1FFE /* systemModel.swift in Sources */,
+				A211BC8F293493E8005F1FFE /* Client.swift in Sources */,
+				A209D33929358DE700C68ED6 /* ControlViewModel.swift in Sources */,
+				A24396AF294095C100041164 /* GamepadController.swift in Sources */,
 				A208449C292CA1BC0072E981 /* IntelligentLiftingFrameApp.swift in Sources */,
+				A211BC932934B599005F1FFE /* Command.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
