@@ -5,13 +5,24 @@
 //  Created by MAN DING on 29/11/22.
 //
 
+//TODO: flip the moving mass manual directions for both X & Y (DONE & TESTED)
+//TODO: levelOn, can't move up/down (DONE & TESTED)
+//TODO: save mass set value for the previous action (DONE & TESTED)
+//TODO: after adjusting angle for gyro, Auto Gyro will be on (DONE & TESTED)
+//TODO: status check! SET ZERO are busy command, need to wait for the server to send the status ready messages (intermediate solution: wait for 0.5s to send the next one)
+//TODO: send zero before sending auto-on for gyro
+
+
 import Foundation
 
 class ControlViewModel: ObservableObject {
     
-    static var address = "172.26.62.175"
-    static var port: UInt16 = 8080
-    private var inputValue: String = "0"
+    @Published var inputDirection: String = "up"
+    @Published var inputValue: String = "0"
+    @Published var autoGyroOn = false
+    @Published var sendGyroOnCmd = false
+    private var massXMoveValue: String = "0"
+    private var massYMoveValue: String = "0"
     
     @Published private var model = SystemTracker()
     
@@ -26,15 +37,17 @@ class ControlViewModel: ObservableObject {
     var nextCommand: Command.controlCommand? {
         return model.nextCommandToSend
     }
+    
+    @Published private var client = initClient()
 
-    private static func initClient(host address: String, port portNumber: UInt16) -> Client {
-        let client = Client(host: address, port: portNumber)
+    private static func initClient() -> Client {
+        let client = Client()
         client.start()
         client.send(data: (strToData(Command.authCommand.idAdmin.rawValue)))
         return client
     }
 
-    private var client = initClient(host: ControlViewModel.address, port: ControlViewModel.port)
+    
 
     func sendPressManualButton(typeOfControlButton button: AppConstants.ControlButton) {
         let cmdToSend = processButton(of: button)
@@ -44,8 +57,7 @@ class ControlViewModel: ObservableObject {
     }
     
     func sendReleaseMnaualButton() {
-        let stopCmd = releaseStopCommand
-        if let cmd = stopCmd {
+        if let cmd = releaseStopCommand {
             client.send(data: ControlViewModel.strToData(cmd.rawValue))
             model.processUserInput(of: cmd)
             model.clearReleaseStopAfterSending()
@@ -53,25 +65,25 @@ class ControlViewModel: ObservableObject {
     }
     
     func sendToggleCommand(of toggle: AppConstants.ControlToggle) {
-        let toggleCmd = getCommandFromToggle(toggle)
+        let toggleCmd = processToggle(of: toggle)
         if let cmd = toggleCmd {
-            client.send(data: ControlViewModel.strToData(cmd.rawValue))
+            //sendNextCommand() figure out how long does zero takes
+            client.send(data: ControlViewModel.strToData(cmd))
         }
     }
     
-    func sendAutoCommand(of direction: AppConstants.autoDirection?, unit value: Int) {
-        let autoCmdStr = processAutoAction(of: direction, unit: value)
+    func sendAutoCommand(of direction: AppConstants.autoDirection?) {
+        let distance = Int(inputValue) ?? 0
+        let autoCmdStr = processAutoAction(of: direction, unit: distance)
         if let cmdStr = autoCmdStr {
             client.send(data: ControlViewModel.strToData(cmdStr))
-            if let nextCmd = nextCommand {
-                client.send(data: ControlViewModel.strToData(nextCmd.rawValue))
-            }
+            sendNextCommand()
+            checkGyroState()
         }
     }
     
     func sendAutoStopCommand() {
-        let stopCmd = autoStopCommand
-        if let cmd = stopCmd {
+        if let cmd = autoStopCommand {
             client.send(data: ControlViewModel.strToData(cmd.rawValue))
             model.processUserInput(of: cmd)
             model.clearAutoStopAfterSending()
@@ -80,8 +92,7 @@ class ControlViewModel: ObservableObject {
     
     private func processAutoAction(of direction: AppConstants.autoDirection?, unit value: Int) -> String?{
         if direction != nil && value != 0 {
-            convertNegativeSign(of: value)
-            let autoCmd = getCommandFromAutoActionAndProcessValue(of: direction!)
+            let autoCmd = getCommandFromAutoActionAndProcessValue(of: direction!, input: value)
             let processedCmd = model.processUserInput(of: autoCmd!)
             if let sendCmd = processedCmd {
                 return sendCmd + inputValue
@@ -106,6 +117,21 @@ class ControlViewModel: ObservableObject {
         }
     }
     
+    private func sendNextCommand() {
+        sleep(1)
+        if let nextCmd = nextCommand {
+            client.send(data: ControlViewModel.strToData(nextCmd.rawValue))
+            model.clearNextCommand()
+        }
+    }
+    
+    private func checkGyroState() {
+        if model.gyroState == .autoOn {
+            autoGyroOn = true
+            sendGyroOnCmd = false
+        }
+    }
+    
     private static func strToData(_ inputString: String) -> Data {
         return inputString.data(using: .utf8)!
     }
@@ -113,13 +139,13 @@ class ControlViewModel: ObservableObject {
     private func getCommandFromButton(_ button: AppConstants.ControlButton) -> Command.controlCommand? {
         switch button {
         case .Yplus:
-            return Command.controlCommand.YPlusManual
-        case .Yminus:
             return Command.controlCommand.YMinusManual
+        case .Yminus:
+            return Command.controlCommand.YPlusManual
         case .Xminus:
-            return Command.controlCommand.XMinusManual
-        case .Xplus:
             return Command.controlCommand.XPlusManual
+        case .Xplus:
+            return Command.controlCommand.XMinusManual
         case .up:
             return Command.controlCommand.upManual
         case .down:
@@ -140,7 +166,9 @@ class ControlViewModel: ObservableObject {
         }
     }
     
-    private func getCommandFromAutoActionAndProcessValue(of autoDirection: AppConstants.autoDirection) -> Command.controlCommand? {
+    private func getCommandFromAutoActionAndProcessValue(of autoDirection: AppConstants.autoDirection, input value: Int) -> Command.controlCommand? {
+        let valueStr = convertNegativeSign(of: value)
+        inputValue = valueStr
         switch autoDirection {
         case .up:
             return Command.controlCommand.upAuto
@@ -148,9 +176,11 @@ class ControlViewModel: ObservableObject {
             return Command.controlCommand.downAuto
         case .X:
             processValueForLateralX()
+            massXMoveValue = valueStr
             return Command.controlCommand.XAutoSet
         case .Y:
             processValueForLateralY()
+            massYMoveValue = valueStr
             return Command.controlCommand.YAutoSet
         case .rotation:
             return Command.controlCommand.adjustAngleAuto
@@ -158,19 +188,19 @@ class ControlViewModel: ObservableObject {
     }
     
     
-    private func convertNegativeSign(of value: Int) {
+    private func convertNegativeSign(of value: Int) -> String {
         if value < 0 {
-            inputValue = "_" + String(abs(value))
+            return "_" + String(abs(value))
         } else {
-            inputValue = String(value)
+            return String(value)
         }
     }
     
     private func processValueForLateralY() {
-        inputValue = "Y" + inputValue
+        inputValue = massXMoveValue + ",Y" + inputValue
     }
     
     private func processValueForLateralX() {
-        inputValue = "X" + inputValue + ",Y0"
+        inputValue = "X" + inputValue + ",Y" + massYMoveValue
     }
 }

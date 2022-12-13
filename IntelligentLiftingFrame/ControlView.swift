@@ -5,17 +5,12 @@
 //  Created by MAN DING on 22/11/22.
 //
 
-//TODO: more things for control?
-
 import SwiftUI
 
 struct ControlView: View {
     
-    @ObservedObject var controlModel: ControlViewModel
+    @ObservedObject var controlVM: ControlViewModel
     //@ObservedObject var gamepad = GameController()
-    @State private var inputDistance: String = "0"
-    @State private var selectedDirection = "up"
-    @State private var autoGyroOn = false
     @State private var keepLevelOn = false
     
     
@@ -36,16 +31,18 @@ struct ControlView: View {
                     createButton(of: AppConstants.ControlButton.Yplus).padding(.leading, 10)
                     TextField(
                       "Input distance",
-                      text: $inputDistance,
+                      text: $controlVM.inputValue,
                       onCommit: {
-                        print(inputDistance)
+                        print($controlVM.inputValue)
                       }
                     ).frame(width: 150.0, height: 100).textFieldStyle(RoundedBorderTextFieldStyle()).padding()
                     HStack(spacing: 110) {
-                        Toggle("Auto Gyro", isOn: $autoGyroOn)
-                            .onChange(of: autoGyroOn) { value in
+                        Toggle("Auto Gyro", isOn: $controlVM.autoGyroOn)
+                            .onChange(of: controlVM.autoGyroOn) { value in
                                 if value {
-                                    sendToggleCommand(of: AppConstants.ControlToggle.gyroOn)
+                                    if controlVM.sendGyroOnCmd {
+                                        sendToggleCommand(of: AppConstants.ControlToggle.gyroOn)
+                                    }
                                 } else {
                                     sendToggleCommand(of: AppConstants.ControlToggle.gyroOff)
                                 }
@@ -74,10 +71,10 @@ struct ControlView: View {
                     
                     VStack {
                         Text("Select a direction").font(.title3).padding(.top, -30)
-                        Picker("Pick a direction", selection: $selectedDirection) {
+                        Picker("Pick a direction", selection: $controlVM.inputDirection) {
                             ForEach(directions, id: \.self) { item in Text(item)}.frame(width: 80).clipped()
                         }.frame(width: 150, height: 50, alignment: .center)
-                        Text("Your input: \(selectedDirection) by \(inputDistance) unit")
+                        Text("Your input: \(controlVM.inputDirection) by \(controlVM.inputValue) unit")
                             .font(.headline).foregroundColor(Color.black).padding(.top, 10)
                     }
                     
@@ -138,25 +135,24 @@ struct ControlView: View {
     }
     
     func sendManualPressedCommand(of controlButton: AppConstants.ControlButton) {
-        controlModel.sendPressManualButton(typeOfControlButton: controlButton)
+        controlVM.sendPressManualButton(typeOfControlButton: controlButton)
     }
     
     func sendManualReleasedCommand() {
-        controlModel.sendReleaseMnaualButton()
+        controlVM.sendReleaseMnaualButton()
     }
     
     func sendToggleCommand(of toggle: AppConstants.ControlToggle) {
-        controlModel.sendToggleCommand(of: toggle)
+        controlVM.sendToggleCommand(of: toggle)
     }
     
     func sendAutoStateCommand() {
-        let autoDirection = AppConstants.autoDirection(rawValue: selectedDirection)
-        let distance = Int(inputDistance) ?? 0
-        controlModel.sendAutoCommand(of: autoDirection, unit: distance)
+        let autoDirection = AppConstants.autoDirection(rawValue: controlVM.inputDirection)
+        controlVM.sendAutoCommand(of: autoDirection)
     }
     
     func sendAutoStopCommand() {
-        controlModel.sendAutoStopCommand()
+        controlVM.sendAutoStopCommand()
     }
 }
 
@@ -260,7 +256,7 @@ struct drawingConstants {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         let controlModel = ControlViewModel()
-        ControlView(controlModel: controlModel)
+        ControlView(controlVM: controlModel)
         //ControlView()
             .previewInterfaceOrientation(.landscapeRight)
     }

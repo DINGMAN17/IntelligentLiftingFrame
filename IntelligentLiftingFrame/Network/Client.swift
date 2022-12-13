@@ -9,19 +9,18 @@ import Foundation
 import Network
 
 class Client {
-    let connection: ClientConnection
-    let host: NWEndpoint.Host
-    let port: NWEndpoint.Port
     
-    init(host: String, port: UInt16) {
-        self.host = NWEndpoint.Host(host)
-        self.port = NWEndpoint.Port(rawValue: port)!
-        let nwConnection = NWConnection(host: self.host, port: self.port, using: .tcp)
-        connection = ClientConnection(nwConnection: nwConnection)
+    let connection: ClientConnection = initConnection()
+    
+    private static func initConnection() -> ClientConnection {
+        let host = NWEndpoint.Host("127.0.0.1")
+        let port = NWEndpoint.Port(rawValue: 8080)!
+        let nwConnection = NWConnection(host: host, port: port, using: .tcp)
+        return ClientConnection(nwConnection: nwConnection)
     }
     
     func start() {
-        print("Client started \(host) \(port)")
+        print("Client started")
         connection.didStopCallback = didStopCallback(error:)
         connection.start()
     }

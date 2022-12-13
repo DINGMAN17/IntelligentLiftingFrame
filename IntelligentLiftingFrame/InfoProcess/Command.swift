@@ -29,8 +29,8 @@ struct Command {
         case YStop = "A-C-M-move_y_stop"
         case XMinusManual = "A-C-M-move_x_minus"
         case YMinusManual = "A-C-M-move_y_minus"
-        case XAutoSet = "A-C-M-set-"
-        case YAutoSet = "A-C-M-set-X0,"
+        case XAutoSet = "A-C-M-set-" 
+        case YAutoSet = "A-C-M-set-X"
         case autoMove = "A-C-M-move"
         case massStop = "A-C-M-stop"
         
@@ -39,7 +39,7 @@ struct Command {
         case autoGyroOff = "A-C-G-auto_off"
         case adjustAngleAuto = "A-C-G-move_angle-@"
         case adjustStopAuto = "A-C-G-move_angle_stop"
-        //case gyro
+        case setZero = "A-C-G-zero"
     }
     
 }

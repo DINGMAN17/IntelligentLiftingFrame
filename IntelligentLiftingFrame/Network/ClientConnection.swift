@@ -12,6 +12,7 @@ class ClientConnection {
     
     let nwConnection: NWConnection
     let queue = DispatchQueue(label: "Client connection Q")
+    var recvMsg: String? = nil
     
     init(nwConnection: NWConnection) {
         self.nwConnection = nwConnection
@@ -43,6 +44,7 @@ class ClientConnection {
         nwConnection.receive(minimumIncompleteLength: 1, maximumLength: 65536) { (data, _, isComplete, error) in
             if let data = data, !data.isEmpty {
                 let message = String(data: data, encoding: .utf8)
+                self.recvMsg = message
                 print("connection did receive, data: \(data as NSData) string: \(message ?? "-" )")
             }
             if isComplete {
