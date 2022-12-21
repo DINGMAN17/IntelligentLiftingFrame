@@ -21,6 +21,7 @@ struct Command {
         case downManual = "A-C-L-down_m"
         case keepLevelOn = "A-C-L-auto"
         case levelStop = "A-C-L-stop"
+        case levelStep = "A-C-L-step-00150101501015000150"
         
         //moving mass command
         case XPlusManual = "A-C-M-move_x_plus"

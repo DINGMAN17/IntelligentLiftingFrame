@@ -49,7 +49,6 @@ struct SystemTracker {
             toSendCmd = true
         case .autoGyroOn:
             gyroState = .autoOn
-            nextCommandToSend = .setZero
             toSendCmd = true
         case .autoGyroOff:
             gyroState = .autoOff

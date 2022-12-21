@@ -40,9 +40,7 @@ struct ControlView: View {
                         Toggle("Auto Gyro", isOn: $controlVM.autoGyroOn)
                             .onChange(of: controlVM.autoGyroOn) { value in
                                 if value {
-                                    if controlVM.sendGyroOnCmd {
-                                        sendToggleCommand(of: AppConstants.ControlToggle.gyroOn)
-                                    }
+                                    sendToggleCommand(of: AppConstants.ControlToggle.gyroOn)
                                 } else {
                                     sendToggleCommand(of: AppConstants.ControlToggle.gyroOff)
                                 }
@@ -94,7 +92,7 @@ struct ControlView: View {
                                 .foregroundColor(.red)
                                 .frame(width: 75, height: 75)
                                 
-                                Button(action: {sendAutoStateCommand()}) {
+                                Button(action: {sendAutoStartCommand()}) {
                                     Text("Start")
                                 }
                                 .foregroundColor(.green)
@@ -103,6 +101,11 @@ struct ControlView: View {
                             .padding()
                             .buttonStyle(CircleStyle())
                     
+                    Button{sendLevelStep()} label: {
+                                Text("Step")
+                            }
+                            .foregroundColor(.gray)
+                            .frame(width: 75, height: 75)
                         
                 }.padding(.leading, 10)
                 
@@ -146,13 +149,17 @@ struct ControlView: View {
         controlVM.sendToggleCommand(of: toggle)
     }
     
-    func sendAutoStateCommand() {
+    func sendAutoStartCommand() {
         let autoDirection = AppConstants.autoDirection(rawValue: controlVM.inputDirection)
         controlVM.sendAutoCommand(of: autoDirection)
     }
     
     func sendAutoStopCommand() {
         controlVM.sendAutoStopCommand()
+    }
+    
+    func sendLevelStep() {
+        controlVM.sendLevelStep()
     }
 }
 
