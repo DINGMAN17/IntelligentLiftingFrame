@@ -101,11 +101,23 @@ struct ControlView: View {
                             .padding()
                             .buttonStyle(CircleStyle())
                     
-                    Button{sendLevelStep()} label: {
-                                Text("Step")
-                            }
-                            .foregroundColor(.gray)
-                            .frame(width: 75, height: 75)
+                    HStack(spacing: 110) {
+                        Button{sendLevelStep()} label: {
+                                    Text("Step")
+                                }
+                                .foregroundColor(.gray)
+                                .frame(width: 75, height: 75)
+                        
+                        TextField(
+                          "Input distance",
+                          text: $controlVM.address,
+                          onCommit: {
+                            print($controlVM.address)
+                            establishConnection()
+                          }
+                        ).frame(width: 150.0, height: 100).textFieldStyle(RoundedBorderTextFieldStyle()).padding()
+                    }
+                    
                         
                 }.padding(.leading, 10)
                 
@@ -135,6 +147,10 @@ struct ControlView: View {
                 }))
          .padding(.horizontal, 90)
         
+    }
+    
+    func establishConnection() {
+        controlVM.establishClientConnection()
     }
     
     func sendManualPressedCommand(of controlButton: AppConstants.ControlButton) {

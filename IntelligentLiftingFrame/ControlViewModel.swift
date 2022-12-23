@@ -29,6 +29,9 @@ class ControlViewModel: ObservableObject {
     @Published var autoGyroOn = false
     @Published var sendGyroOnCmd = true
     
+    @Published var address = "192.168.1.3"
+    var port: UInt16 = 8080
+    @Published var connect = false
     private var inputDistance: String = "0"
     private var massXMoveValue: String = "0"
     private var massYMoveValue: String = "0"
@@ -47,16 +50,18 @@ class ControlViewModel: ObservableObject {
         return model.nextCommandToSend
     }
     
-    @Published private var client = initClient()
-
-    private static func initClient() -> Client {
-        let client = Client()
-        client.start()
-        client.send(data: (strToData(Command.authCommand.idAdmin.rawValue)))
-        return client
+    private lazy var client: Client = {
+        initClient(host: self.address, port: self.port)
+    }()
+    
+    private func initClient(host address: String, port portNumber: UInt16) -> Client {
+        return Client(host: address, port: portNumber)
     }
 
-    
+    func establishClientConnection()  {
+        client.start()
+        client.send(data: (ControlViewModel.strToData(Command.authCommand.idAdmin.rawValue + "\n")))
+    }
 
     func sendPressManualButton(typeOfControlButton button: AppConstants.ControlButton) {
         let cmdToSend = processButton(of: button)

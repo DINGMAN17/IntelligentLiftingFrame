@@ -9,24 +9,23 @@ import Foundation
 import Network
 
 class ClientConnection {
-    
+
     let nwConnection: NWConnection
     let queue = DispatchQueue(label: "Client connection Q")
-    var recvMsg: String? = nil
-    
+
     init(nwConnection: NWConnection) {
         self.nwConnection = nwConnection
     }
-    
+
     var didStopCallback: ((Error?) -> Void)? = nil
-    
+
     func start() {
         print("connection will start")
         nwConnection.stateUpdateHandler = stateDidChange(to:)
         setupReceive()
         nwConnection.start(queue: queue)
     }
-    
+
     private func stateDidChange(to state: NWConnection.State) {
         switch state {
         case .waiting(let error):
@@ -39,12 +38,11 @@ class ClientConnection {
             break
         }
     }
-    
+
     private func setupReceive() {
         nwConnection.receive(minimumIncompleteLength: 1, maximumLength: 65536) { (data, _, isComplete, error) in
             if let data = data, !data.isEmpty {
                 let message = String(data: data, encoding: .utf8)
-                self.recvMsg = message
                 print("connection did receive, data: \(data as NSData) string: \(message ?? "-" )")
             }
             if isComplete {
@@ -56,7 +54,7 @@ class ClientConnection {
             }
         }
     }
-        
+
     func send(data: Data) {
         nwConnection.send(content: data, completion: .contentProcessed( { error in
             if let error = error {
@@ -66,22 +64,22 @@ class ClientConnection {
                 print("connection did send, data: \(data as NSData)")
         }))
     }
-    
+
     func stop() {
         print("connection will stop")
         stop(error: nil)
     }
-    
+
     private func connectionDidFail(error: Error) {
         print("connection did fail, error: \(error)")
         self.stop(error: error)
     }
-    
+
     private func connectionDidEnd() {
         print("connection did end")
         self.stop(error: nil)
     }
-    
+
     private func stop(error: Error?) {
         self.nwConnection.stateUpdateHandler = nil
         self.nwConnection.cancel()
