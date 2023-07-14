@@ -9,10 +9,13 @@ import SwiftUI
 
 @main
 struct IntelligentLiftingFrameApp: App {
+    
+    @StateObject var controlModel = ControlViewModel()
+    @StateObject var recvMsg = MessageViewModel.messageViewModel
+    
     var body: some Scene {
         WindowGroup {
-            let controlModel = ControlViewModel()
-            ControlView(controlVM: controlModel)
+            ControlView(controlVM: controlModel, msgVM: recvMsg)
         }
     }
 }

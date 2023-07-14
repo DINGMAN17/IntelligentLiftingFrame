@@ -8,13 +8,21 @@
 import Foundation
 import Network
 
-class ClientConnection {
+class ClientConnection: NSObject {
 
     let nwConnection: NWConnection
     let queue = DispatchQueue(label: "Client connection Q")
+    var messageReceiver: MessageViewModel
+    var newMessage = "" {
+        didSet {
+            self.updateMessageReceiver(of: newMessage)
+        }
+    }
+
 
     init(nwConnection: NWConnection) {
         self.nwConnection = nwConnection
+        self.messageReceiver = MessageViewModel.messageViewModel
     }
 
     var didStopCallback: ((Error?) -> Void)? = nil
@@ -42,8 +50,8 @@ class ClientConnection {
     private func setupReceive() {
         nwConnection.receive(minimumIncompleteLength: 1, maximumLength: 65536) { (data, _, isComplete, error) in
             if let data = data, !data.isEmpty {
-                let message = String(data: data, encoding: .utf8)
-                print("connection did receive, data: \(data as NSData) string: \(message ?? "-" )")
+                self.newMessage = String(data: data, encoding: .utf8)!
+                print("connection did receive, data: \(data as NSData) string: \(self.newMessage)")
             }
             if isComplete {
                 self.connectionDidEnd()
@@ -53,6 +61,10 @@ class ClientConnection {
                 self.setupReceive()
             }
         }
+    }
+    
+    func updateMessageReceiver(of newMsg: String) {
+        self.messageReceiver.processMsgFromServer(of: newMsg)
     }
 
     func send(data: Data) {

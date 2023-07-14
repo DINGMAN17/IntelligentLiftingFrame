@@ -9,7 +9,8 @@ import Foundation
 import Network
 
 class Client {
-    let connection: ClientConnection
+    var connection: ClientConnection
+    
     let host: NWEndpoint.Host
     let port: NWEndpoint.Port
 
@@ -42,3 +43,4 @@ class Client {
         }
     }
 }
+

@@ -7,6 +7,17 @@
 
 import Foundation
 
+class InfoProcessModel{
+    
+    var systemTracker: SystemTracker
+    
+    static let infoProgressModel = InfoProcessModel()
+    
+    private init() {
+        systemTracker = SystemTracker()
+    }
+}
+
 struct SystemTracker {
     //action state
     private (set) var movingMassState = SubSystemState.MovingMassState.stop
@@ -16,6 +27,7 @@ struct SystemTracker {
     private (set) var movingMassStatus: SystemConstants.SubsystemStatus?
     private (set) var levellingStatus: SystemConstants.SubsystemStatus?
     private (set) var gyroStatus: SystemConstants.SubsystemStatus?
+    private (set) var visionStatus: SystemConstants.SubsystemStatus?
     //command related
     private (set) var releaseStopCommand: Command.controlCommand? //for manual control
     private (set) var autoIfStopCommand: Command.controlCommand?
@@ -32,15 +44,19 @@ struct SystemTracker {
         
         switch command {
         case .XPlusManual, .XMinusManual:
-            toSendCmd = processMassMoveManual(of: .moveX)
+            toSendCmd = processMassMoveManual(of: .moveManualX)
         case .YMinusManual, .YPlusManual:
-            toSendCmd = processMassMoveManual(of: .moveY)
+            toSendCmd = processMassMoveManual(of: .moveManualY)
         case .YStop, .XStop:
             movingMassState = .stop
+        case .antiSwayOn:
+            toSendCmd = processAntiSwayOn()
+        case .antiSwayOff:
+            toSendCmd = processAntiSwayOff()
         case .upManual:
-            toSendCmd = processLevelMoveManual(of: .up)
+            toSendCmd = processLevelMoveManual(of: .manualUp)
         case .downManual:
-            toSendCmd = processLevelMoveManual(of: .down)
+            toSendCmd = processLevelMoveManual(of: .manualDown)
         case .keepLevelOn:
             levellingState = .keepLevel
             toSendCmd = true
@@ -48,19 +64,18 @@ struct SystemTracker {
             levellingState = .stop
             toSendCmd = true
         case .autoGyroOn:
-            gyroState = .autoOn
-            toSendCmd = true
+            toSendCmd = processGyroAutoOn()
         case .autoGyroOff:
             gyroState = .autoOff
             toSendCmd = true
         case .upAuto:
-            toSendCmd = processLevelMoveAuto(of: .up)
+            toSendCmd = processLevelMoveAuto(of: .autoUp)
         case .downAuto:
-            toSendCmd = processLevelMoveAuto(of: .down)
+            toSendCmd = processLevelMoveAuto(of: .autoDown)
         case .YAutoSet:
-            toSendCmd = processMassSet(of: .moveY)
+            toSendCmd = processMassSet(of: .moveAutoX)
         case .XAutoSet:
-            toSendCmd = processMassSet(of: .moveX)
+            toSendCmd = processMassSet(of: .moveAutoY)
         case .adjustAngleAuto:
             autoIfStopCommand = .adjustStopAuto
             gyroState = .autoOn
@@ -87,20 +102,50 @@ struct SystemTracker {
         nextCommandToSend = nil
     }
     
+    mutating func processAntiSwayOn() -> Bool {
+        if !checkSystemStatus(system: SystemConstants.SubsystemType.Mass) {
+            return false
+        } else {
+            movingMassState = .antiSwayOn
+            return true
+        }
+    }
+    
+    mutating func processAntiSwayOff() -> Bool {
+        //TODO: need to send command to move moving mass to origin
+        movingMassState = .antiSwayOff
+        return true
+    }
+
+    mutating func processGyroAutoOn() -> Bool {
+        if !checkSystemStatus(system: SystemConstants.SubsystemType.Gyro) {
+            return false
+        } else {
+            gyroState = .autoOn
+            return true
+        }
+    }
+    
     mutating func processMassMoveManual(of newState: SubSystemState.MovingMassState) -> Bool {
+        if !checkSystemStatus(system: SystemConstants.SubsystemType.Mass) {
+            return false
+        }
         if newState != movingMassState {
             movingMassState = newState
-            if newState == .moveX {
+            if newState == .moveManualX {
                 releaseStopCommand = Command.controlCommand.XStop
-            } else {
+            } else if newState == .moveManualY {
                 releaseStopCommand = Command.controlCommand.YStop
             }
             return true
-        } 
+        }
         return false
     }
     
     mutating func processLevelMoveManual(of newState: SubSystemState.LevellingState) -> Bool {
+        if !checkSystemStatus(system: SystemConstants.SubsystemType.Level) {
+            return false
+        }
         if levellingState != .keepLevel {
             if levellingState != newState {
                 levellingState = newState
@@ -112,6 +157,9 @@ struct SystemTracker {
     }
     
     mutating func processLevelMoveAuto(of newState: SubSystemState.LevellingState) -> Bool {
+        if !checkSystemStatus(system: SystemConstants.SubsystemType.Level) {
+            return false
+        }
         if levellingState != .keepLevel {
             levellingState = newState
             autoIfStopCommand = Command.controlCommand.levelStop
@@ -122,6 +170,9 @@ struct SystemTracker {
     }
     
     mutating func processMassSet(of newState: SubSystemState.MovingMassState) -> Bool {
+        if !checkSystemStatus(system: SystemConstants.SubsystemType.Mass) {
+            return false
+        }
         nextCommandToSend = .autoMove
         autoIfStopCommand = .massStop
         movingMassState = newState
@@ -129,11 +180,11 @@ struct SystemTracker {
         //TODO: add a check, make sure it doesn't exceed the limit?
     }
     
-    mutating func processStatusMessage(of statusMsg: String) {
+    mutating func processStatusMessage(of statusMsg: String) -> (systemType: SystemConstants.SubsystemType?, systemStatus: String){
         //statusMsg format: "L-STATUS-ready"
         let msgArr = statusMsg.split(separator: "-")
         let typeOfSystem = SystemConstants.SubsystemType(rawValue: String(msgArr[0]))
-        let newStatus = SystemConstants.SubsystemStatus(rawValue: String(msgArr[-1]))
+        let newStatus = SystemConstants.SubsystemStatus(rawValue: String(msgArr[2]))
         switch typeOfSystem {
         case .Level:
             levellingStatus = newStatus
@@ -144,21 +195,42 @@ struct SystemTracker {
         default:
             break
         }
+        return (typeOfSystem, String(msgArr[2]))
+    }
+    
+    func checkSystemStatus(system: SystemConstants.SubsystemType) -> Bool {
+        let readyStatus = SystemConstants.SubsystemStatus.ready
+        switch system {
+        case.Gyro:
+            return gyroStatus == readyStatus
+        case .Mass:
+            return movingMassStatus == readyStatus
+        case .Level:
+            return levellingStatus == readyStatus
+        case .Vision:
+            return visionStatus == readyStatus
+        }
     }
 }
 
 struct SubSystemState {
     enum MovingMassState {
-        case moveX
-        case moveY
+        case antiSwayOn
+        case antiSwayOff
+        case moveManualX
+        case moveManualY
+        case moveAutoX
+        case moveAutoY
         case stop
     }
     
     enum LevellingState {
         case levelOnce
         case keepLevel
-        case up
-        case down
+        case autoUp
+        case autoDown
+        case manualUp
+        case manualDown
         case stop
     }
     
@@ -167,21 +239,5 @@ struct SubSystemState {
         case autoOff
         case adjustAngle
         case stop
-    }
-}
-
-struct SystemConstants {
-    enum SubsystemStatus: String {
-        case wait = "wait"
-        case ready = "ready"
-        case busy = "busy"
-        case error = "warning"
-        case lock = "lock"
-    }
-    
-    enum SubsystemType: String {
-        case Level = "L"
-        case Mass = "M"
-        case Gyro = "G"
     }
 }

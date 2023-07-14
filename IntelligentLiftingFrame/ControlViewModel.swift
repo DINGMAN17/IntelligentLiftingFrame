@@ -5,20 +5,11 @@
 //  Created by MAN DING on 29/11/22.
 //
 //1st testing
-//TODO: flip the moving mass manual directions for both X & Y (DONE & TESTED)
-//TODO: levelOn, can't move up/down (DONE & TESTED)
-//TODO: save mass set value for the previous action (DONE & TESTED)
-//TODO: after adjusting angle for gyro, Auto Gyro will be on (DONE & TESTED)
 //TODO: status check! SET ZERO are busy command, need to wait for the server to send the status ready messages (intermediate solution: wait for 0.5s to send the next one)
 //TODO: send zero before sending auto-on for gyro
 
 //2nd testing
-//TODO: accept 0 as user input distance (DONE)
-//TODO: moving mass switch between manual & auto, need to read moving mass current position, sometimes the manual commands don't go through, test more times!
 //TODO: server for stopping moving mass, message not recognised (quick fix implemented: move is no longer busy command)
-//TODO: how to prevent sending autoOn command when adjusting the angle for gyro (DONE & TESTED)
-//TODO: change input distance display, avoid manipulate the string directly (DONE & TESTED)
-//TODO: build project from mac mini (DONE)
 
 import Foundation
 
@@ -28,26 +19,29 @@ class ControlViewModel: ObservableObject {
     @Published var inputValue: String = "0"
     @Published var autoGyroOn = false
     @Published var sendGyroOnCmd = true
+    @Published var antiSwayOn = false
+    @Published var autoLevelOn = false
     
     @Published var address = "192.168.1.3"
     var port: UInt16 = 8080
+
     @Published var connect = false
     private var inputDistance: String = "0"
     private var massXMoveValue: String = "0"
     private var massYMoveValue: String = "0"
     
-    @Published private var model = SystemTracker()
+    @Published var model = InfoProcessModel.infoProgressModel
     
     var releaseStopCommand: Command.controlCommand? {
-        return model.releaseStopCommand
+        return model.systemTracker.releaseStopCommand
     }
     
     var autoStopCommand: Command.controlCommand? {
-        return model.autoIfStopCommand
+        return model.systemTracker.autoIfStopCommand
     }
     
     var nextCommand: Command.controlCommand? {
-        return model.nextCommandToSend
+        return model.systemTracker.nextCommandToSend
     }
     
     private lazy var client: Client = {
@@ -55,7 +49,7 @@ class ControlViewModel: ObservableObject {
     }()
     
     private func initClient(host address: String, port portNumber: UInt16) -> Client {
-        return Client(host: address, port: portNumber)
+        Client(host: address, port: portNumber)
     }
 
     func establishClientConnection()  {
@@ -73,16 +67,18 @@ class ControlViewModel: ObservableObject {
     func sendReleaseMnaualButton() {
         if let cmd = releaseStopCommand {
             client.send(data: ControlViewModel.strToData(cmd.rawValue))
-            model.processUserInput(of: cmd)
-            model.clearReleaseStopAfterSending()
+            model.systemTracker.processUserInput(of: cmd)
+            model.systemTracker.clearReleaseStopAfterSending()
         }
     }
     
-    func sendToggleCommand(of toggle: AppConstants.ControlToggle) {
+    func sendToggleCommand(of toggle: AppConstants.ControlToggle) -> Bool {
         let toggleCmd = processToggle(of: toggle)
         if let cmd = toggleCmd {
             client.send(data: ControlViewModel.strToData(cmd))
+            return true
         }
+        return false
     }
     
     func sendAutoCommand(of direction: AppConstants.autoDirection?) {
@@ -98,8 +94,8 @@ class ControlViewModel: ObservableObject {
     func sendAutoStopCommand() {
         if let cmd = autoStopCommand {
             client.send(data: ControlViewModel.strToData(cmd.rawValue))
-            model.processUserInput(of: cmd)
-            model.clearAutoStopAfterSending()
+            model.systemTracker.processUserInput(of: cmd)
+            model.systemTracker.clearAutoStopAfterSending()
         }
     }
     
@@ -111,7 +107,7 @@ class ControlViewModel: ObservableObject {
     private func processAutoAction(of direction: AppConstants.autoDirection?, unit value: Int) -> String?{
         if direction != nil {
             let autoCmd = getCommandFromAutoActionAndProcessValue(of: direction!, input: value)
-            let processedCmd = model.processUserInput(of: autoCmd!)
+            let processedCmd = model.systemTracker.processUserInput(of: autoCmd!)
             if let sendCmd = processedCmd {
                 return sendCmd + inputDistance
             }
@@ -121,7 +117,7 @@ class ControlViewModel: ObservableObject {
     
     private func processButton(of currentButton: AppConstants.ControlButton) -> String? {
         if let currentCommand = getCommandFromButton(currentButton) {
-            return model.processUserInput(of: currentCommand)
+            return model.systemTracker.processUserInput(of: currentCommand)
         } else {
             return nil
         }
@@ -129,7 +125,7 @@ class ControlViewModel: ObservableObject {
     
     private func processToggle(of toggle: AppConstants.ControlToggle) -> String? {
         if let currentCommand = getCommandFromToggle(toggle) {
-            return model.processUserInput(of: currentCommand)
+            return model.systemTracker.processUserInput(of: currentCommand)
         } else {
             return nil
         }
@@ -139,12 +135,12 @@ class ControlViewModel: ObservableObject {
         sleep(1)
         if let nextCmd = nextCommand {
             client.send(data: ControlViewModel.strToData(nextCmd.rawValue))
-            model.clearNextCommand()
+            model.systemTracker.clearNextCommand()
         }
     }
     
     private func checkGyroState() {
-        if model.gyroState == .autoOn {
+        if model.systemTracker.gyroState == .autoOn {
             autoGyroOn = true
             sendGyroOnCmd = false
         } else {
@@ -170,6 +166,10 @@ class ControlViewModel: ObservableObject {
             return Command.controlCommand.upManual
         case .down:
             return Command.controlCommand.downManual
+        case .clockwise:
+            return Command.controlCommand.clockwiseManual
+        case .antiClockwise:
+            return Command.controlCommand.antiClockwiseManual
         }
     }
     
@@ -188,6 +188,10 @@ class ControlViewModel: ObservableObject {
             return Command.controlCommand.keepLevelOn
         case .levelOff:
             return Command.controlCommand.levelStop
+        case .antiSwayOn:
+            return Command.controlCommand.antiSwayOn
+        case .antiSwayOff:
+            return Command.controlCommand.antiSwayOff
         }
     }
     

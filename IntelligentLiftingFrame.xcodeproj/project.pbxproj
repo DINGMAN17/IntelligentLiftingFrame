@@ -19,7 +19,11 @@
 		A211BC8F293493E8005F1FFE /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = A211BC8E293493E8005F1FFE /* Client.swift */; };
 		A211BC912934B053005F1FFE /* UserSystemModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A211BC902934B053005F1FFE /* UserSystemModel.swift */; };
 		A211BC932934B599005F1FFE /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = A211BC922934B599005F1FFE /* Command.swift */; };
+		A22153382A60D69F0062A824 /* 2DView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22153372A60D69F0062A824 /* 2DView.swift */; };
+		A221533A2A60D75B0062A824 /* SystemConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22153392A60D75B0062A824 /* SystemConstants.swift */; };
 		A24396AF294095C100041164 /* GamepadController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A24396AE294095C100041164 /* GamepadController.swift */; };
+		A2AA66A02A42AB2200E84F5F /* AppConstantsAndStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2AA669F2A42AB2200E84F5F /* AppConstantsAndStyles.swift */; };
+		A2B43A822994E17100730571 /* MessageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B43A812994E17100730571 /* MessageViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,7 +59,11 @@
 		A211BC8E293493E8005F1FFE /* Client.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Client.swift; sourceTree = "<group>"; };
 		A211BC902934B053005F1FFE /* UserSystemModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSystemModel.swift; sourceTree = "<group>"; };
 		A211BC922934B599005F1FFE /* Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
+		A22153372A60D69F0062A824 /* 2DView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 2DView.swift; sourceTree = "<group>"; };
+		A22153392A60D75B0062A824 /* SystemConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemConstants.swift; sourceTree = "<group>"; };
 		A24396AE294095C100041164 /* GamepadController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamepadController.swift; sourceTree = "<group>"; };
+		A2AA669F2A42AB2200E84F5F /* AppConstantsAndStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstantsAndStyles.swift; sourceTree = "<group>"; };
+		A2B43A812994E17100730571 /* MessageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,7 +114,8 @@
 		A208449A292CA1BC0072E981 /* IntelligentLiftingFrame */ = {
 			isa = PBXGroup;
 			children = (
-				A24396AD2940959F00041164 /* Gamepad */,
+				A22153362A60D6780062A824 /* PPVCvisualization */,
+				A24396AD2940959F00041164 /* Joystick */,
 				A209D33B2935AE3400C68ED6 /* InfoProcess */,
 				A209D33A2935AE1B00C68ED6 /* Network */,
 				A208449B292CA1BC0072E981 /* IntelligentLiftingFrameApp.swift */,
@@ -114,6 +123,8 @@
 				A208449F292CA1BD0072E981 /* Assets.xcassets */,
 				A20844A1292CA1BD0072E981 /* Preview Content */,
 				A209D33829358DE700C68ED6 /* ControlViewModel.swift */,
+				A2AA669F2A42AB2200E84F5F /* AppConstantsAndStyles.swift */,
+				A22153392A60D75B0062A824 /* SystemConstants.swift */,
 			);
 			path = IntelligentLiftingFrame;
 			sourceTree = "<group>";
@@ -157,16 +168,25 @@
 			children = (
 				A211BC902934B053005F1FFE /* UserSystemModel.swift */,
 				A211BC922934B599005F1FFE /* Command.swift */,
+				A2B43A812994E17100730571 /* MessageViewModel.swift */,
 			);
 			path = InfoProcess;
 			sourceTree = "<group>";
 		};
-		A24396AD2940959F00041164 /* Gamepad */ = {
+		A22153362A60D6780062A824 /* PPVCvisualization */ = {
+			isa = PBXGroup;
+			children = (
+				A22153372A60D69F0062A824 /* 2DView.swift */,
+			);
+			path = PPVCvisualization;
+			sourceTree = "<group>";
+		};
+		A24396AD2940959F00041164 /* Joystick */ = {
 			isa = PBXGroup;
 			children = (
 				A24396AE294095C100041164 /* GamepadController.swift */,
 			);
-			path = Gamepad;
+			path = Joystick;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -301,11 +321,15 @@
 			files = (
 				A211BC8D293492E4005F1FFE /* ClientConnection.swift in Sources */,
 				A208449E292CA1BC0072E981 /* ControlView.swift in Sources */,
+				A2B43A822994E17100730571 /* MessageViewModel.swift in Sources */,
+				A2AA66A02A42AB2200E84F5F /* AppConstantsAndStyles.swift in Sources */,
 				A211BC912934B053005F1FFE /* UserSystemModel.swift in Sources */,
 				A211BC8F293493E8005F1FFE /* Client.swift in Sources */,
 				A209D33929358DE700C68ED6 /* ControlViewModel.swift in Sources */,
 				A24396AF294095C100041164 /* GamepadController.swift in Sources */,
+				A22153382A60D69F0062A824 /* 2DView.swift in Sources */,
 				A208449C292CA1BC0072E981 /* IntelligentLiftingFrameApp.swift in Sources */,
+				A221533A2A60D75B0062A824 /* SystemConstants.swift in Sources */,
 				A211BC932934B599005F1FFE /* Command.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -30,10 +30,12 @@ struct Command {
         case YStop = "A-C-M-move_y_stop"
         case XMinusManual = "A-C-M-move_x_minus"
         case YMinusManual = "A-C-M-move_y_minus"
-        case XAutoSet = "A-C-M-set-" 
+        case XAutoSet = "A-C-M-set-"
         case YAutoSet = "A-C-M-set-X"
         case autoMove = "A-C-M-move"
         case massStop = "A-C-M-stop"
+        case antiSwayOn = "A-C-M-sway_on"
+        case antiSwayOff = "A-C-M-sway_off"
         
         //gyro command, add more
         case autoGyroOn = "A-C-G-auto_on"
@@ -41,6 +43,9 @@ struct Command {
         case adjustAngleAuto = "A-C-G-move_angle-@"
         case adjustStopAuto = "A-C-G-move_angle_stop"
         case setZero = "A-C-G-zero"
+        case clockwiseManual = "A-C-G-moveC" //TODO: check with simtech
+        case antiClockwiseManual = "A-C-G-moveAC" //TODO: check with simtech, implement on main contoller
     }
     
 }
+
