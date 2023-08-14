@@ -12,16 +12,17 @@ class GameController: ObservableObject{
     @Published var connected = false
     @Published var state = GCDeviceBattery.State.unknown
     var number = 0
+    
     struct element: Identifiable{
         var id = UUID()
         var name: AppConstants.ControlButton
-        var released:String
-        var pressed:String
+        var pressedAction: (() -> Void)?
+        var releasedAction: (() -> Void)?
+        var released: String
+        var pressed: String
         var state:Bool = false
         var value:Float = 0
-        var xvalue:Float = 0
-        var yvalue:Float = 0
-        var type:String
+        var type: String
     }
     
     @Published var elements:[element] = [
@@ -50,14 +51,17 @@ class GameController: ObservableObject{
         controller.extendedGamepad?.buttonY.pressedChangedHandler = { (button, value, pressed) in self.button(ofElement: 4, pressed) }
         controller.extendedGamepad?.buttonA.pressedChangedHandler = { (button, value, pressed) in self.button(ofElement: 5, pressed) }
     }
+    
     func didDisconnectController(_ notification: Notification) {
         connected = false
         let controller = notification.object as! GCController
         print("◦ disConnected \(controller.productCategory)")
     }
+    
     func button(ofElement button: Int, _ pressed: Bool){
         elements[button].state = pressed
     }
+    
     func trigger(ofElement button: Int, _ value: Float){
         elements[button].value = value
     }

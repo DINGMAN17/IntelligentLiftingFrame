@@ -11,6 +11,7 @@ struct ControlView: View {
     
     @ObservedObject var controlVM: ControlViewModel
     @ObservedObject var msgVM: MessageViewModel
+    @StateObject private var gameController = GameController()
     
     @State private var isSchemeticViewVisible = true
     
@@ -34,7 +35,7 @@ struct ControlView: View {
             Grid(alignment: .top, horizontalSpacing: -70, verticalSpacing: 15) {
                 
                 GridRow {
-                    createButton(of: AppConstants.ControlButton.Yplus, systemStatus: msgVM.recvMassStatus).padding(.leading, 10)
+                    createButton(of: AppConstants.ControlButton.Yplus, systemStatus: msgVM.recvMassStatus, ofElement: 1).padding(.leading, 10)
                     
                     HStack(spacing: 50) {
                         createToggleAntiSway()
@@ -47,14 +48,14 @@ struct ControlView: View {
                 
                 GridRow {
                     HStack(spacing: -30) {
-                        createButton(of: AppConstants.ControlButton.Xminus, systemStatus: msgVM.recvMassStatus)
-                        createButton(of: AppConstants.ControlButton.Xplus, systemStatus: msgVM.recvMassStatus)
+                        createButton(of: AppConstants.ControlButton.Xminus, systemStatus: msgVM.recvMassStatus, ofElement: 0)
+                        createButton(of: AppConstants.ControlButton.Xplus, systemStatus: msgVM.recvMassStatus, ofElement: 2)
                     }.padding(.bottom, 2)
                     
                     HStack(spacing: -80) {
                         HStack(spacing: -100) {
-                            createButton(of: AppConstants.ControlButton.up, systemStatus: msgVM.recvLevelStatus)
-                            createButton(of: AppConstants.ControlButton.down, systemStatus: msgVM.recvLevelStatus)
+                            createButton(of: AppConstants.ControlButton.up, systemStatus: msgVM.recvLevelStatus, ofElement: 4)
+                            createButton(of: AppConstants.ControlButton.down, systemStatus: msgVM.recvLevelStatus, ofElement: 5)
                         }
                         
                     }//.padding(.trailing, -50)
@@ -63,7 +64,7 @@ struct ControlView: View {
                 }
                 
                 GridRow {
-                    createButton(of: AppConstants.ControlButton.Yminus, systemStatus: msgVM.recvMassStatus)
+                    createButton(of: AppConstants.ControlButton.Yminus, systemStatus: msgVM.recvMassStatus, ofElement: 3)
                     
                     HStack(spacing: 100) {
                         createStepButton()
@@ -224,9 +225,12 @@ struct ControlView: View {
     }
 
     
-    func createButton(of controlButton: AppConstants.ControlButton, systemStatus: String) -> some View {
+    func createButton(of controlButton: AppConstants.ControlButton, systemStatus: String, ofElement elementIndex: Int) -> some View {
         
         Button(action: {
+            gameController.button(ofElement: elementIndex, true)
+                // Function to execute when button is pressed
+                //sendManualPressedCommand(of: controlButton)
         }, label: {
             Image(systemName:controlButton.rawValue)
                 .font(.system(size: 57))
@@ -234,9 +238,21 @@ struct ControlView: View {
                 .overlay(RoundedRectangle(cornerRadius: 15)
                     .stroke(.green, lineWidth: 4)
                     .frame(width: 100, height: 100)
+                    .background(gameController.elements[elementIndex].state ? Color.green : Color.clear)
                     )
         })
+        .onChange(of: gameController.elements[elementIndex].state) { newState in
+            if newState {
+                // Execute function when button is pressed
+                print(controlButton.rawValue)
+                sendManualPressedCommand(of: controlButton)
+            } else {
+                // Execute function when button is released
+                sendManualReleasedCommand()
+            }
+        }
         .disabled(!(systemStatus=="ready"))
+        .padding(.horizontal, 90)
         .simultaneousGesture(
             DragGesture(minimumDistance: 0)
                 .onChanged({_ in
@@ -244,10 +260,9 @@ struct ControlView: View {
                 })
                 .onEnded({_ in
                     sendManualReleasedCommand()
-                }))
-         .padding(.horizontal, 90)
-        
+        }))
     }
+    
     
     func createStatusViewForAllSystems() -> some View {
         VStack(spacing: 10) {

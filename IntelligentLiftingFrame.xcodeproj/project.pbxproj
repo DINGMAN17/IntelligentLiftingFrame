@@ -25,6 +25,7 @@
 		A2AA66A02A42AB2200E84F5F /* AppConstantsAndStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2AA669F2A42AB2200E84F5F /* AppConstantsAndStyles.swift */; };
 		A2B43A822994E17100730571 /* MessageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B43A812994E17100730571 /* MessageViewModel.swift */; };
 		A2C0C64E2A6644D300D1A6DE /* BirdsEyeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2C0C64D2A6644D300D1A6DE /* BirdsEyeView.swift */; };
+		A2CC22212A89F83300FC0FB2 /* JoystickView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2CC22202A89F83300FC0FB2 /* JoystickView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +67,7 @@
 		A2AA669F2A42AB2200E84F5F /* AppConstantsAndStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstantsAndStyles.swift; sourceTree = "<group>"; };
 		A2B43A812994E17100730571 /* MessageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageViewModel.swift; sourceTree = "<group>"; };
 		A2C0C64D2A6644D300D1A6DE /* BirdsEyeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BirdsEyeView.swift; sourceTree = "<group>"; };
+		A2CC22202A89F83300FC0FB2 /* JoystickView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoystickView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -188,6 +190,7 @@
 			isa = PBXGroup;
 			children = (
 				A24396AE294095C100041164 /* GamepadController.swift */,
+				A2CC22202A89F83300FC0FB2 /* JoystickView.swift */,
 			);
 			path = Joystick;
 			sourceTree = "<group>";
@@ -324,6 +327,7 @@
 			files = (
 				A2C0C64E2A6644D300D1A6DE /* BirdsEyeView.swift in Sources */,
 				A211BC8D293492E4005F1FFE /* ClientConnection.swift in Sources */,
+				A2CC22212A89F83300FC0FB2 /* JoystickView.swift in Sources */,
 				A208449E292CA1BC0072E981 /* ControlView.swift in Sources */,
 				A2B43A822994E17100730571 /* MessageViewModel.swift in Sources */,
 				A2AA66A02A42AB2200E84F5F /* AppConstantsAndStyles.swift in Sources */,
