@@ -111,7 +111,8 @@ class MessageViewModel: ObservableObject {
                     self.recvData.updateRollPitch(newMsg: msg)
                 }
             case .Mass:
-                self.recvData.updateLateralPos(newPos: newData)
+//                self.recvData.updateLateralPos(newPos: newData)
+                print(newData)
             case .Gyro:
                 self.recvData.updateYaw(newYaw: newData)
             case .Vision:
@@ -132,9 +133,10 @@ class MessageViewModel: ObservableObject {
 }
 
 struct PPVCState {
-    var x: Double = -50.0
-    var y: Double = -50.0
-    var z: Double = 200.0
+    var x: Double = 0.0
+    var y: Double = 0.0
+    var z: Double = 0.0
+    var isAligned: Bool = true
     
     var yaw: Double = 0.0
     var roll: Double = 0.0
@@ -154,6 +156,7 @@ struct PPVCState {
     }
     
     mutating func updateYaw(newYaw: String) {
+        let angleArray = newYaw.components(separatedBy: "-")
         self.yaw = Double(newYaw) ?? 0.0
     }
     
@@ -169,6 +172,11 @@ struct PPVCState {
         self.x = Double(dataArr[1]) ?? 0.0
         self.y = Double(dataArr[2]) ?? 0.0
         self.z = Double(dataArr[3]) ?? 0.0
+        //change alignment status threshold here
+        if (abs(self.x) < 10 && abs(self.y) < 10 && abs(self.yaw) < 1) {
+            self.isAligned = true
+        }
+        else{self.isAligned = false}
     }
 }
 

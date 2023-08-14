@@ -24,6 +24,7 @@
 		A24396AF294095C100041164 /* GamepadController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A24396AE294095C100041164 /* GamepadController.swift */; };
 		A2AA66A02A42AB2200E84F5F /* AppConstantsAndStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2AA669F2A42AB2200E84F5F /* AppConstantsAndStyles.swift */; };
 		A2B43A822994E17100730571 /* MessageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B43A812994E17100730571 /* MessageViewModel.swift */; };
+		A2C0C64E2A6644D300D1A6DE /* BirdsEyeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2C0C64D2A6644D300D1A6DE /* BirdsEyeView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +65,7 @@
 		A24396AE294095C100041164 /* GamepadController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamepadController.swift; sourceTree = "<group>"; };
 		A2AA669F2A42AB2200E84F5F /* AppConstantsAndStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstantsAndStyles.swift; sourceTree = "<group>"; };
 		A2B43A812994E17100730571 /* MessageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageViewModel.swift; sourceTree = "<group>"; };
+		A2C0C64D2A6644D300D1A6DE /* BirdsEyeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BirdsEyeView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -177,6 +179,7 @@
 			isa = PBXGroup;
 			children = (
 				A22153372A60D69F0062A824 /* 2DView.swift */,
+				A2C0C64D2A6644D300D1A6DE /* BirdsEyeView.swift */,
 			);
 			path = PPVCvisualization;
 			sourceTree = "<group>";
@@ -319,6 +322,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A2C0C64E2A6644D300D1A6DE /* BirdsEyeView.swift in Sources */,
 				A211BC8D293492E4005F1FFE /* ClientConnection.swift in Sources */,
 				A208449E292CA1BC0072E981 /* ControlView.swift in Sources */,
 				A2B43A822994E17100730571 /* MessageViewModel.swift in Sources */,

@@ -91,7 +91,7 @@ struct ControlView: View {
     
     func create360View() -> some View {
         HStack() {
-            Image("360placeholder").resizable()
+            BirdsEyeView()
         }
         .frame(width: 800, height: 300)
         .padding(.bottom, 20)
