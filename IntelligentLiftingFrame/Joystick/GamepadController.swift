@@ -7,7 +7,6 @@
 
 import GameController
 
-
 class GameController: ObservableObject{
     @Published var connected = false
     @Published var state = GCDeviceBattery.State.unknown
@@ -64,6 +63,10 @@ class GameController: ObservableObject{
     
     func trigger(ofElement button: Int, _ value: Float){
         elements[button].value = value
+    }
+    
+    func getConnect() -> Bool {
+        return connected
     }
 }
 

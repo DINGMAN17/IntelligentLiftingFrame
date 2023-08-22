@@ -4,12 +4,6 @@
 //
 //  Created by MAN DING on 29/11/22.
 //
-//1st testing
-//TODO: status check! SET ZERO are busy command, need to wait for the server to send the status ready messages (intermediate solution: wait for 0.5s to send the next one)
-//TODO: send zero before sending auto-on for gyro
-
-//2nd testing
-//TODO: server for stopping moving mass, message not recognised (quick fix implemented: move is no longer busy command)
 
 import Foundation
 
@@ -82,10 +76,11 @@ class ControlViewModel: ObservableObject {
     }
     
     func sendAutoCommand(of direction: AppConstants.autoDirection?) {
-        let distance = Int(inputValue) ?? 0
+        let distance = Double(inputValue) ?? 0
         let autoCmdStr = processAutoAction(of: direction, unit: distance)
         if let cmdStr = autoCmdStr {
             client.send(data: ControlViewModel.strToData(cmdStr))
+            print("sent auto command: ", cmdStr)
             checkGyroState()
             sendNextCommand()
         }
@@ -104,7 +99,7 @@ class ControlViewModel: ObservableObject {
         client.send(data: ControlViewModel.strToData(stepCommand))
     }
     
-    private func processAutoAction(of direction: AppConstants.autoDirection?, unit value: Int) -> String?{
+    private func processAutoAction(of direction: AppConstants.autoDirection?, unit value: Double) -> String?{
         if direction != nil {
             let autoCmd = getCommandFromAutoActionAndProcessValue(of: direction!, input: value)
             let processedCmd = model.systemTracker.processUserInput(of: autoCmd!)
@@ -195,7 +190,7 @@ class ControlViewModel: ObservableObject {
         }
     }
     
-    private func getCommandFromAutoActionAndProcessValue(of autoDirection: AppConstants.autoDirection, input value: Int) -> Command.controlCommand? {
+    private func getCommandFromAutoActionAndProcessValue(of autoDirection: AppConstants.autoDirection, input value: Double) -> Command.controlCommand? {
         let valueStr = convertNegativeSign(of: value)
         inputDistance = valueStr
         switch autoDirection {
@@ -217,7 +212,7 @@ class ControlViewModel: ObservableObject {
     }
     
     
-    private func convertNegativeSign(of value: Int) -> String {
+    private func convertNegativeSign(of value: Double) -> String {
         if value < 0 {
             return "_" + String(abs(value))
         } else {

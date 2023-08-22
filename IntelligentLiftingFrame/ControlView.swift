@@ -11,9 +11,10 @@ struct ControlView: View {
     
     @ObservedObject var controlVM: ControlViewModel
     @ObservedObject var msgVM: MessageViewModel
-    @StateObject private var gameController = GameController()
+    @ObservedObject var gameController: GameController
     
     @State private var isSchemeticViewVisible = true
+    @State var allowJoystick = false
     
     let directions = ["up", "down", "lateral X", "lateral Y", "rotate"]
     
@@ -24,7 +25,6 @@ struct ControlView: View {
                 Toggle("Top View On", isOn: $isSchemeticViewVisible)
                     .padding()
                     .fixedSize()
-
                 if isSchemeticViewVisible {
                     createSchemeticView()
                 } else {
@@ -33,7 +33,6 @@ struct ControlView: View {
             }
             
             Grid(alignment: .top, horizontalSpacing: -70, verticalSpacing: 15) {
-                
                 GridRow {
                     createButton(of: AppConstants.ControlButton.Yplus, systemStatus: msgVM.recvMassStatus, ofElement: 1).padding(.leading, 10)
                     
@@ -56,6 +55,7 @@ struct ControlView: View {
                         HStack(spacing: -100) {
                             createButton(of: AppConstants.ControlButton.up, systemStatus: msgVM.recvLevelStatus, ofElement: 4)
                             createButton(of: AppConstants.ControlButton.down, systemStatus: msgVM.recvLevelStatus, ofElement: 5)
+                            createStepButton()
                         }
                         
                     }//.padding(.trailing, -50)
@@ -66,10 +66,11 @@ struct ControlView: View {
                 GridRow {
                     createButton(of: AppConstants.ControlButton.Yminus, systemStatus: msgVM.recvMassStatus, ofElement: 3)
                     
-                    HStack(spacing: 100) {
-                        createStepButton()
+                    HStack(spacing: 70) {
+                        //createStepButton()
+                        createAllowJoystickToggle()
                         createIpAddressInput()
-                    }
+                    }.padding(.trailing, 90)
                     
                     HStack(spacing: 110) {
                                             createAutoStopButton()
@@ -114,6 +115,15 @@ struct ControlView: View {
             print($controlVM.inputValue)
           }
         ).frame(width: 150.0, height: 100).textFieldStyle(RoundedBorderTextFieldStyle()).padding()
+    }
+    
+    func createAllowJoystickToggle() -> some View {
+        Toggle(isOn: $allowJoystick) {
+            Label("", systemImage: "gamecontroller")
+        }
+            .padding()
+            .fixedSize()
+            .font(.title)
     }
     
     func createToggleAntiSway() -> some View{
@@ -221,7 +231,9 @@ struct ControlView: View {
                     Text("Step")
         }
             .foregroundColor(.gray)
+            .opacity(0.4)
             .frame(width: 75, height: 75)
+            .padding(.leading, 50)
     }
 
     
@@ -229,8 +241,6 @@ struct ControlView: View {
         
         Button(action: {
             gameController.button(ofElement: elementIndex, true)
-                // Function to execute when button is pressed
-                //sendManualPressedCommand(of: controlButton)
         }, label: {
             Image(systemName:controlButton.rawValue)
                 .font(.system(size: 57))
@@ -238,17 +248,20 @@ struct ControlView: View {
                 .overlay(RoundedRectangle(cornerRadius: 15)
                     .stroke(.green, lineWidth: 4)
                     .frame(width: 100, height: 100)
-                    .background(gameController.elements[elementIndex].state ? Color.green : Color.clear)
+                    .background(gameController.elements[elementIndex].state && allowJoystick ? Color.green : Color.clear)
                     )
         })
         .onChange(of: gameController.elements[elementIndex].state) { newState in
-            if newState {
-                // Execute function when button is pressed
-                print(controlButton.rawValue)
-                sendManualPressedCommand(of: controlButton)
-            } else {
-                // Execute function when button is released
-                sendManualReleasedCommand()
+            //only execute when the gamepad toggle button is on 
+            if (allowJoystick) {
+                if newState {
+                    // Execute function when button is pressed
+                    print(controlButton.rawValue)
+                    sendManualPressedCommand(of: controlButton)
+                } else {
+                    // Execute function when button is released
+                    sendManualReleasedCommand()
+                }
             }
         }
         .disabled(!(systemStatus=="ready"))
@@ -375,7 +388,8 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         let controlModel = ControlViewModel()
         let messageVM = MessageViewModel.messageViewModel
-        ControlView(controlVM: controlModel, msgVM: messageVM)
+        let gameController = GameController()
+        ControlView(controlVM: controlModel, msgVM: messageVM, gameController: gameController)
             .previewInterfaceOrientation(.landscapeRight)
     }
 }

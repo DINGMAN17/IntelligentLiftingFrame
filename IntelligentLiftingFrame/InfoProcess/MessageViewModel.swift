@@ -114,7 +114,7 @@ class MessageViewModel: ObservableObject {
 //                self.recvData.updateLateralPos(newPos: newData)
                 print(newData)
             case .Gyro:
-                self.recvData.updateYaw(newYaw: newData)
+                self.recvData.updateYaw(newYaw: msg)
             case .Vision:
                 self.recvData.updateVisionData(newMsg: msg)
             case .none:
@@ -156,7 +156,8 @@ struct PPVCState {
     }
     
     mutating func updateYaw(newYaw: String) {
-        let angleArray = newYaw.components(separatedBy: "-")
+        let angleArray = newYaw.components(separatedBy: "D")
+        let newYaw = angleArray[1].substring(from: 1)
         self.yaw = Double(newYaw) ?? 0.0
     }
     
