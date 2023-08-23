@@ -16,8 +16,6 @@ struct ControlView: View {
     @State private var isSchemeticViewVisible = true
     @State var allowJoystick = false
     
-    let directions = ["up", "down", "lateral X", "lateral Y", "rotate"]
-    
     var body: some View {
         VStack() {
             drawingConstants.createTitle(AppConstants.appTitle)
@@ -67,7 +65,6 @@ struct ControlView: View {
                     createButton(of: AppConstants.ControlButton.Yminus, systemStatus: msgVM.recvMassStatus, ofElement: 3)
                     
                     HStack(spacing: 70) {
-                        //createStepButton()
                         createAllowJoystickToggle()
                         createIpAddressInput()
                     }.padding(.trailing, 90)
@@ -189,11 +186,14 @@ struct ControlView: View {
     func createAutoMoveInput() -> some View {
         VStack {
             Text("Select a direction").font(.title3).padding(.top, -30)
-            Picker("Pick a direction", selection: $controlVM.inputDirection) {
-                ForEach(directions, id: \.self) { item in Text(item)}.frame(width: 80).clipped()
-            }.frame(width: 150, height: 50, alignment: .center)
+            Picker("Select a direction", selection: $controlVM.inputDirection) {
+                ForEach(AppConstants.autoDirection.allCases, id: \.self) { direction in Text(direction.rawValue)
+                        .font(.title)
+                }//.frame(width: 80).clipped()
+            }
+            .frame(width: 200, height: 50, alignment: .center)
             let unit = getUnitBasedOnInputDirection()
-            Text("Your input: \(controlVM.inputDirection) by \(controlVM.inputValue) \(unit)")
+            Text("Your input: \(controlVM.inputDirection.rawValue) by \(controlVM.inputValue) \(unit)")
                 .font(.headline).foregroundColor(Color.black).padding(.top, 10)
         }
     }
@@ -371,8 +371,7 @@ struct ControlView: View {
     }
     
     func sendAutoStartCommand() {
-        let autoDirection = AppConstants.autoDirection(rawValue: controlVM.inputDirection)
-        controlVM.sendAutoCommand(of: autoDirection)
+        controlVM.sendAutoCommand(of: controlVM.inputDirection)
     }
     
     func sendAutoStopCommand() {

@@ -9,7 +9,9 @@ import Foundation
 
 class ControlViewModel: ObservableObject {
     
-    @Published var inputDirection: String = "up"
+    let minimumAngle = 0.5
+    
+    @Published var inputDirection: AppConstants.autoDirection = .clockwise
     @Published var inputValue: String = "0"
     @Published var autoGyroOn = false
     @Published var sendGyroOnCmd = true
@@ -161,10 +163,6 @@ class ControlViewModel: ObservableObject {
             return Command.controlCommand.upManual
         case .down:
             return Command.controlCommand.downManual
-        case .clockwise:
-            return Command.controlCommand.clockwiseManual
-        case .antiClockwise:
-            return Command.controlCommand.antiClockwiseManual
         }
     }
     
@@ -191,12 +189,16 @@ class ControlViewModel: ObservableObject {
     }
     
     private func getCommandFromAutoActionAndProcessValue(of autoDirection: AppConstants.autoDirection, input value: Double) -> Command.controlCommand? {
+        
         let valueStr = convertNegativeSign(of: value)
         inputDistance = valueStr
+        
         switch autoDirection {
         case .up:
+            inputDistance = String(Int(value))
             return Command.controlCommand.upAuto
         case .down:
+            inputDistance = String(Int(value))
             return Command.controlCommand.downAuto
         case .X:
             inputDistance = processValueForLateralX()
@@ -206,7 +208,11 @@ class ControlViewModel: ObservableObject {
             inputDistance = processValueForLateralY()
             massYMoveValue = valueStr
             return Command.controlCommand.YAutoSet
-        case .rotation:
+        case .clockwise:
+            inputDistance = checkAndProcessValueForAngle(input: value)
+            return Command.controlCommand.adjustAngleAuto
+        case .anticlockwise:
+            inputDistance = checkAndProcessValueForAngle(input: value)
             return Command.controlCommand.adjustAngleAuto
         }
     }
@@ -214,10 +220,21 @@ class ControlViewModel: ObservableObject {
     
     private func convertNegativeSign(of value: Double) -> String {
         if value < 0 {
-            return "_" + String(abs(value))
+            return "_" + String(abs(Int(value)))
         } else {
-            return String(value)
+            return String(Int(value))
         }
+    }
+    
+    private func checkAndProcessValueForAngle(input value: Double) -> String {
+        var angleToAdjust = "0.5"
+        if value > 0 {
+            angleToAdjust = String(value)
+        }
+        if inputDirection == .anticlockwise {
+            angleToAdjust = "_" + angleToAdjust
+        }
+        return angleToAdjust
     }
     
     private func processValueForLateralY() -> String {

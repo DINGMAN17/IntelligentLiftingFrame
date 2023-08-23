@@ -67,8 +67,6 @@ struct AppConstants {
         case Xplus = "arrow.right"
         case up = "arrow.up.circle"
         case down = "arrow.down.circle"
-        case antiClockwise = "arrow.counterclockwise"
-        case clockwise = "arrow.clockwise"
     }
     
     enum ControlToggle {
@@ -80,12 +78,13 @@ struct AppConstants {
         case antiSwayOff
     }
     
-    enum autoDirection: String {
-        case up = "up"
-        case down = "down"
+    enum autoDirection: String, CaseIterable {
+        case clockwise = "rotate clockwise"
+        case anticlockwise = "rotate anticlockwise"
         case X = "lateral X"
         case Y = "lateral Y"
-        case rotation = "rotate"
+        case up = "up"
+        case down = "down"
     }
 }
 
