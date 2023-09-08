@@ -114,13 +114,21 @@ class MessageViewModel: ObservableObject {
 //                self.recvData.updateLateralPos(newPos: newData)
                 print(newData)
             case .Gyro:
-                self.recvData.updateYaw(newYaw: msg)
+//                self.recvData.updateYaw(newYaw: msg)
+                print(newData)
             case .Vision:
                 self.recvData.updateVisionData(newMsg: msg)
             case .none:
                 print(msg)
             }
         }
+    }
+    
+    func getAvgYaw() -> Double {
+        let recentYawList = self.recvData.recentYawList
+        let sum = recentYawList.reduce(0) {$0 + $1}
+        let avg = recentYawList.isEmpty ? 0.0 : sum / Double(recentYawList.count)
+        return (avg * 10).rounded()/10
     }
     
     enum MessageType: String {
@@ -145,6 +153,8 @@ struct PPVCState {
     var massX: Double = 0.0
     var massY: Double = 0.0
     
+    var recentYawList: [Double] = []
+    
     mutating func updateLateralPos(newPos: String) {
         //TODO: check how to parse data from moving mass
         //now assume X100Y200
@@ -159,6 +169,15 @@ struct PPVCState {
         let angleArray = newYaw.components(separatedBy: "D")
         let newYaw = angleArray[1].substring(from: 1)
         self.yaw = Double(newYaw) ?? 0.0
+        
+    }
+    
+    mutating func updateYawList() {
+        //add the most recent reading to a list for calculating the average
+        self.recentYawList.append(self.yaw)
+        if self.recentYawList.count > 5 {
+            self.recentYawList.removeFirst()
+        }
     }
     
     mutating func updateRollPitch(newMsg: String) {
@@ -173,8 +192,10 @@ struct PPVCState {
         self.x = Double(dataArr[1]) ?? 0.0
         self.y = Double(dataArr[2]) ?? 0.0
         self.z = Double(dataArr[3]) ?? 0.0
+        self.yaw = Double(dataArr[4]) ?? 0.0
+        self.updateYawList()
         //change alignment status threshold here
-        if (abs(self.x) < 10 && abs(self.y) < 10 && abs(self.yaw) < 1) {
+        if (abs(self.x) < 20 && abs(self.y) < 20 && abs(self.yaw) < 1) {
             self.isAligned = true
         }
         else{self.isAligned = false}

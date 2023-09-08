@@ -47,5 +47,9 @@ struct Command {
         case antiClockwiseManual = "A-C-G-moveAC" //TODO: check with simtech, implement on main contoller
     }
     
+    enum checkCommand: String {
+        case AllStatus = "A-C-I-status"
+    }
+    
 }
 

@@ -105,13 +105,33 @@ struct ControlView: View {
     }
     
     func createInputDistance() -> some View {
-        TextField(
-          "Input distance",
-          text: $controlVM.inputValue,
-          onCommit: {
-            print($controlVM.inputValue)
-          }
-        ).frame(width: 150.0, height: 100).textFieldStyle(RoundedBorderTextFieldStyle()).padding()
+        HStack{
+            TextField(
+              "Input distance",
+              text: $controlVM.inputValue,
+              onCommit: {
+                print($controlVM.inputValue)
+              }
+            ).frame(width: 150.0, height: 100).textFieldStyle(RoundedBorderTextFieldStyle()).padding()
+            
+            Button(action: {
+                getRecommendedYaw()//get latest yaw value
+            }, label: {
+                Image(systemName:"location.magnifyingglass")
+                    .font(.title)
+            })
+        }
+    }
+    
+    func getRecommendedYaw() {
+        let avgYaw = msgVM.getAvgYaw()
+        if (avgYaw >= 0) {
+            controlVM.inputValue = String(avgYaw)
+            controlVM.inputDirection = .clockwise
+        } else {
+            controlVM.inputDirection = .anticlockwise
+            controlVM.inputValue = String(abs(avgYaw))
+        }
     }
     
     func createAllowJoystickToggle() -> some View {
@@ -189,11 +209,11 @@ struct ControlView: View {
             Picker("Select a direction", selection: $controlVM.inputDirection) {
                 ForEach(AppConstants.autoDirection.allCases, id: \.self) { direction in Text(direction.rawValue)
                         .font(.title)
-                }//.frame(width: 80).clipped()
+                }
             }
             .frame(width: 200, height: 50, alignment: .center)
             let unit = getUnitBasedOnInputDirection()
-            Text("Your input: \(controlVM.inputDirection.rawValue) by \(controlVM.inputValue) \(unit)")
+            Text("Your input: \(controlVM.inputDirection.rawValue) by \(controlVM.inputValue) \(controlVM.unit)")
                 .font(.headline).foregroundColor(Color.black).padding(.top, 10)
         }
     }
@@ -281,21 +301,26 @@ struct ControlView: View {
         VStack(spacing: 10) {
             //drawingConstants.createSubTitle(AppConstants.tControl)
             HStack {
-                Text("Level status: ")
-                    .font(.headline).foregroundColor(Color.black)
+                createCheckButtonForStatusView(systemName: SystemConstants.SubsystemType.Level)
                 createStatusView(of: msgVM.recvLevelStatus)
             }
             HStack {
-                Text("Mass status: ")
-                    .font(.headline).foregroundColor(Color.black)
+                createCheckButtonForStatusView(systemName: SystemConstants.SubsystemType.Mass)
                 createStatusView(of: msgVM.recvMassStatus)
             }
             HStack {
-                Text("Gyro status: ")
-                    .font(.headline).foregroundColor(Color.black)
+                createCheckButtonForStatusView(systemName: SystemConstants.SubsystemType.Gyro)
                 createStatusView(of: msgVM.recvGyroStatus)
             }
         }
+    }
+    
+    func createCheckButtonForStatusView(systemName: SystemConstants.SubsystemType) -> some View {
+        Button(action: {
+                        sendRequestForStatusUpdate()
+                    }) {
+                        Text(systemName.rawValue)
+                    }
     }
     
     func createStatusView(of statusStr: String) -> some View {
@@ -317,29 +342,7 @@ struct ControlView: View {
     
     func createDataDisplay() -> some View {
         HStack(spacing: 80) {
-//            VStack(spacing: 5) {
-//                HStack {
-//                    Text("X: ")
-//                        .font(.headline).foregroundColor(Color.black)
-//                    Text(msgVM.recvData.x.description)
-//                }
-//                HStack {
-//                    Text("Y: ")
-//                        .font(.headline).foregroundColor(Color.black)
-//                    Text(msgVM.recvData.y.description)
-//                }
-//                HStack {
-//                    Text("Z: ")
-//                        .font(.headline).foregroundColor(Color.black)
-//                    Text(msgVM.recvData.z.description)
-//                }
-//            }
             VStack(spacing: 5) {
-//                HStack {
-//                    Text("Yaw: ")
-//                        .font(.headline).foregroundColor(Color.black)
-//                    Text(msgVM.recvData.yaw.description)
-//                }
                 HStack {
                     Text("Roll: ")
                         .font(.headline).foregroundColor(Color.black)
@@ -375,11 +378,16 @@ struct ControlView: View {
     }
     
     func sendAutoStopCommand() {
+        controlVM.inputValue = String(0) //remove auto input to prevent user's mistakes
         controlVM.sendAutoStopCommand()
     }
     
     func sendLevelStep() {
         controlVM.sendLevelStep()
+    }
+    
+    func sendRequestForStatusUpdate() {
+        controlVM.sendRequestForStatusUpdate()
     }
 }
 

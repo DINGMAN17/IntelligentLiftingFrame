@@ -14,6 +14,7 @@ struct SystemConstants {
         case Gyro = "G"
         case Vision = "V"
     }
+    
     enum SubsystemStatus: String {
         case wait = "wait"
         case ready = "ready"
@@ -22,3 +23,5 @@ struct SystemConstants {
         case lock = "lock"
     }
 }
+
+

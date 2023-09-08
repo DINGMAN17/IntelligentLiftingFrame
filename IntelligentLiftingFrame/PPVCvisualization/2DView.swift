@@ -38,7 +38,7 @@ struct SchematicView: View {
             HStack {
                 //TODO: change the offset here, please don't change originalPPVCoffset
                 createPPVCForTopView()
-                    .offset(x: originalPPVCoffset[0] + 0.5 * data.recvData.x, y: originalPPVCoffset[1] + 0.5 * data.recvData.y)
+                    .offset(x: originalPPVCoffset[0] + 0.2 * data.recvData.x, y: originalPPVCoffset[1] + 0.2 * data.recvData.y)
                 //don't change the labels below
                 if (data.recvData.isAligned) {
                     createAlignmentStatusSuccessView().offset(x: 120.0, y:70.0)
@@ -109,7 +109,8 @@ struct SchematicView: View {
                     .font(.system(size: 32))
                     .foregroundColor(.blue)
             }
-            Text("\(data.recvData.yaw, specifier: "%.0f")°").frame(width: 60,height: 50)
+//            Text("\(data.recvData.yaw, specifier: "%.0f")°").frame(width: 60,height: 50)
+            Text(String(data.recvData.yaw) + "°").frame(width: 60,height: 50)
         }.offset(x: -200.0, y: 70.0)
     }
     

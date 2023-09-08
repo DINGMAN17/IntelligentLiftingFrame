@@ -40,6 +40,23 @@ class ControlViewModel: ObservableObject {
         return model.systemTracker.nextCommandToSend
     }
     
+    var unit: String {
+        switch inputDirection {
+        case .clockwise:
+            return "degree"
+        case .anticlockwise:
+            return "degree"
+        case .X:
+            return "steps"
+        case .Y:
+            return "steps"
+        case .up:
+            return "mm"
+        case .down:
+            return "mm"
+        }
+    }
+    
     private lazy var client: Client = {
         initClient(host: self.address, port: self.port)
     }()
@@ -94,6 +111,11 @@ class ControlViewModel: ObservableObject {
             model.systemTracker.processUserInput(of: cmd)
             model.systemTracker.clearAutoStopAfterSending()
         }
+    }
+    
+    func sendRequestForStatusUpdate() {
+        let cmd = Command.checkCommand.AllStatus
+        client.send(data: ControlViewModel.strToData(cmd.rawValue))
     }
     
     func sendLevelStep() {
