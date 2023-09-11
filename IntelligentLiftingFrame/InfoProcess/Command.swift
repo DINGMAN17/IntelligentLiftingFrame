@@ -14,6 +14,9 @@ struct Command {
     }
     
     enum controlCommand: String {
+        //Integrated command
+        case Estop = "A-C-I-Estop"
+        
         //levelling command
         case upAuto = "A-C-L-up_a-"
         case upManual = "A-C-L-up_m"

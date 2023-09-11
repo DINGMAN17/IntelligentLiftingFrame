@@ -69,6 +69,11 @@ class ControlViewModel: ObservableObject {
         client.start()
         client.send(data: (ControlViewModel.strToData(Command.authCommand.idAdmin.rawValue + "\n")))
     }
+    
+    func sendEstopCommand() {
+        let cmdToSend = model.systemTracker.processUserInput(of: .Estop)
+        client.send(data: ControlViewModel.strToData(cmdToSend!))
+    }
 
     func sendPressManualButton(typeOfControlButton button: AppConstants.ControlButton) {
         let cmdToSend = processButton(of: button)

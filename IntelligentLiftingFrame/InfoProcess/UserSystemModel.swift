@@ -43,6 +43,8 @@ struct SystemTracker {
         var toSendCmd = false
         
         switch command {
+        case .Estop:
+            toSendCmd = true
         case .XPlusManual, .XMinusManual:
             toSendCmd = processMassMoveManual(of: .moveManualX)
         case .YMinusManual, .YPlusManual:

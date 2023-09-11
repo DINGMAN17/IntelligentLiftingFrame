@@ -15,14 +15,22 @@ struct ControlView: View {
     
     @State private var isSchemeticViewVisible = true
     @State var allowJoystick = false
+    @GestureState private var gestureState = false
+    @State private var estopIsPressed = false
     
     var body: some View {
         VStack() {
             drawingConstants.createTitle(AppConstants.appTitle)
             VStack {
-                Toggle("Top View On", isOn: $isSchemeticViewVisible)
-                    .padding()
-                    .fixedSize()
+                HStack(){
+                    Toggle("Top View On", isOn: $isSchemeticViewVisible)
+                        .padding()
+                        .fixedSize()
+                    createEmergencyStopButton()
+                        .buttonStyle(CircleStyle())
+                        .padding(.leading, 630)
+                }
+                
                 if isSchemeticViewVisible {
                     createSchemeticView()
                 } else {
@@ -183,14 +191,27 @@ struct ControlView: View {
         }
     }
     
+    func createEmergencyStopButton() -> some View {
+        Button{
+            sendEstopCommand()
+        } label: {
+                Text("Estop")
+                .bold()
+                .font(.title2)
+                }
+            .background(gestureState ? Color.blue : Color.gray)
+            .foregroundColor(.red)
+            .frame(width: 110, height: 110)
+    }
+    
     func createAutoStopButton() -> some View {
         Button{sendAutoStopCommand()} label: {
                     Text("Stop")
                 .bold()
                 .font(.title2)
                 }
-            .foregroundColor(.red)
-            .frame(width: 100, height: 100)
+            .foregroundColor(.orange)
+            .frame(width: 90, height: 90)
     }
     
     func createAutoStartButton() -> some View {
@@ -200,7 +221,7 @@ struct ControlView: View {
                 .font(.title2)
                 }
                 .foregroundColor(.green)
-                .frame(width: 100, height: 100)
+                .frame(width: 90, height: 90)
     }
     
     func createAutoMoveInput() -> some View {
@@ -382,6 +403,10 @@ struct ControlView: View {
         controlVM.sendAutoStopCommand()
     }
     
+    func sendEstopCommand() {
+        controlVM.sendEstopCommand()
+    }
+    
     func sendLevelStep() {
         controlVM.sendLevelStep()
     }
@@ -390,6 +415,7 @@ struct ControlView: View {
         controlVM.sendRequestForStatusUpdate()
     }
 }
+
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
